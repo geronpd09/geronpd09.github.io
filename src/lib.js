@@ -1,0 +1,4 @@
+import{createClient}from'@supabase/supabase-js';const url=import.meta.env.VITE_SUPABASE_URL;const key=import.meta.env.VITE_SUPABASE_ANON_KEY;export const configured=Boolean(url&&key&&!url.includes('YOUR_PROJECT'));export const supabase=configured?createClient(url,key):null;
+export const dateLabel=(d)=>d?new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):'Present';
+export const fileUrl=(bucket,path)=>path&&supabase?supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl:'';
+export async function uploadFile(bucket,file){if(!supabase)throw Error('Configure Supabase first');if(!file)throw Error('Choose a file');const ext=(file.name.split('.').pop()||'bin').toLowerCase();const path=`${crypto.randomUUID()}.${ext}`;const{error}=await supabase.storage.from(bucket).upload(path,file,{upsert:false});if(error)throw error;return path;}
